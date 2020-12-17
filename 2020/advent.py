@@ -47,3 +47,22 @@ def day2b(file):
 	password_df['position_2'] = password_df.apply(lambda x: x.password[x['max']-1] == x.letter, axis = 1) 
 	password_df['pass'] = (password_df['position_1']) != (password_df['position_2']) 
 	return password_df['pass'].sum()
+
+def day3(file):
+	tree_grid = pd.read_table(file, header=None)[0]
+	rows = []
+	for row in tree_grid:
+		rows.append(list(row*300))
+	grid = np.matrix(rows)
+	return grid
+
+#recursive solution
+def traverse(grid, start_row, start_col, x, y, tree_char = "#"):
+	grid_row, grid_col = grid.shape
+	if (start_row + y > grid_row) | (start_col + x > grid_col):
+		return 0
+	else:
+		print(start_row, start_col)
+		value = 1 if grid[start_row, start_col] == tree_char else 0
+		return value + traverse(grid, start_row + y, start_col + x, x, y, tree_char = tree_char)
+
