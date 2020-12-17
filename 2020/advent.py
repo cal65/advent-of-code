@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from itertools import combinations, accumulate
 from functools import reduce
+import operator
 
 def day1(file, n):
 	 d1 = pd.read_table(file, header=None)[0]
@@ -62,7 +63,14 @@ def traverse(grid, start_row, start_col, x, y, tree_char = "#"):
 	if (start_row + y > grid_row) | (start_col + x > grid_col):
 		return 0
 	else:
-		print(start_row, start_col)
 		value = 1 if grid[start_row, start_col] == tree_char else 0
 		return value + traverse(grid, start_row + y, start_col + x, x, y, tree_char = tree_char)
+
+
+def traverse_part_two(grid):
+	slopes = [[1, 1], [3, 1], [5, 1], [7, 1], [1, 2]]
+	options = []
+	for slope in slopes:
+		options.append(traverse(grid, 0, 0, slope[0], slope[1]))
+	return reduce(operator.mul, options)
 
