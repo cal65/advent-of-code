@@ -307,16 +307,16 @@ def convert_layout(layout):
     return layout_array
 
 
-def assess_seat(layout, row, column):
+def assess_seat(layout, row, column, count_function, n):
     if layout[row, column] == ".":
         return "."
     elif layout[row, column] == "L":
-        if count_adjacent(layout, row, column) == 0:
+        if count_function(layout, row, column) == 0:
             return "#"
         else:
             return "L"
     elif layout[row, column] == "#":
-        if count_adjacent(layout, row, column) >= 4:
+        if count_function(layout, row, column) >= n:
             return "L"
         else:
             return "#"
@@ -352,7 +352,9 @@ def assess_layout(layout):
     layout_copy = layout.copy()
     for row in np.arange(rows):
         for column in np.arange(columns):
-            layout_copy[row, column] = assess_seat(layout, row, column)
+            layout_copy[row, column] = assess_seat(
+                layout, row, column, count_adjacent, 4
+            )
     return layout_copy
 
 
@@ -363,6 +365,63 @@ def simulate(layout):
     i = 0
     while passengers[-2] != passengers[-1]:
         layout = assess_layout(layout)
+        passengers.append((layout == "#").sum())
+        i += 1
+    return passengers[-1], i
+
+
+def count_visible(layout, row, column):
+    def get_seat(layout, row, column, row_d, column_d):
+        row = row + row_d
+        column = column + column_d
+        if (
+            (row < 0)
+            or (column < 0)
+            or (row >= layout.shape[0])
+            or (column >= layout.shape[1])
+        ):
+            return 0
+
+        elif layout[row, column] == "#":
+            return 1
+        elif layout[row, column] == "L":
+            return 0
+        elif layout[row, column] == ".":
+            return get_seat(layout, row, column, row_d, column_d)
+        else:
+            return 0
+
+    visible = (
+        get_seat(layout, row, column, -1, -1)
+        + get_seat(layout, row, column, -1, 1)
+        + get_seat(layout, row, column, 1, -1)
+        + get_seat(layout, row, column, 1, 1)
+        + get_seat(layout, row, column, -1, 0)
+        + get_seat(layout, row, column, 0, -1)
+        + get_seat(layout, row, column, 0, 1)
+        + get_seat(layout, row, column, 1, 0)
+    )
+    return visible
+
+
+def assess_layout_b(layout):
+    rows, columns = layout.shape
+    layout_copy = layout.copy()
+    for row in np.arange(rows):
+        for column in np.arange(columns):
+            layout_copy[row, column] = assess_seat(
+                layout, row, column, count_visible, 5
+            )
+    return layout_copy
+
+
+def simulate_b(layout):
+    passengers = [(layout == "#").sum()]
+    layout = assess_layout_b(layout)
+    passengers.append((layout == "#").sum())
+    i = 0
+    while passengers[-2] != passengers[-1]:
+        layout = assess_layout_b(layout)
         passengers.append((layout == "#").sum())
         i += 1
     return passengers[-1], i
