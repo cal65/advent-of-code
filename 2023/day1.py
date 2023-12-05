@@ -43,3 +43,7 @@ def solve_day1_part2(array):
     value = array.apply(parse_text).sum() 
     return value
 
+if __name__ == "__main__":
+    print(solve_day1('day1.txt'))
+    print(solve_day1_part2(pd.Series(test_array)))
+    print(solve_day1_part2(pd.read_table('day1.txt', header=None)[0]))
