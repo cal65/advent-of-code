@@ -29,9 +29,10 @@ def parse_rolls(rolls, roll_num):
         # should be 3 in roll
         s = []
         if not isinstance(roll, list):
-            break
-        for r in roll:
-            s.append(split_number_and_color(r))
+            s.append([0, 'green'])
+        else:
+            for r in roll:
+                s.append(split_number_and_color(r))
         split_rolls.append(s)
 
     roll_dfs = [split_rows_to_df(s) for s in split_rolls]
@@ -73,6 +74,15 @@ def eval_impossible_rolls(df, n):
     # impossible is now the T/F where T means impossible
     return impossible
 
+
+def get_color_columns(columns, color):
+    return [c for c in columns if color in c]
+
+
+def get_color_max(df, color):
+    color_cols = get_color_columns(df.columns, color)
+    return df[color_cols].max(axis=1)
+
     
 if __name__ == "__main__":
     arr = read_file('2023/day2.txt')
@@ -80,12 +90,19 @@ if __name__ == "__main__":
     print(df)
 
     roll_dfs = {}
-    for i in range(1, 5):
+    for i in range(0, 6):
         roll_dfs[i] = parse_rolls(df[i], i)
-    roll_dfs_all = pd.concat(roll_dfs, ignore_index=True)
-    df_all = pd.concat([df, roll_dfs_all], axis=1)
-    df_all['impossible_1'] = eval_impossible_rolls(df_all, n=1)
-    df_all['impossible_2'] = eval_impossible_rolls(df_all, n=2)
-    df_all['impossible_3'] = eval_impossible_rolls(df_all, n=3)
-    df_all['impossible'] = df_all['impossible_1'] | df_all['impossible_2'] | df_all['impossible_3']
-    impossible_games = df_all.loc[df_all['impossible'] == True, 'game'] 
+        df[f'imp_{i}'] = eval_impossible_rolls(roll_dfs[i], n=i)
+        roll_dfs_all = pd.concat(roll_dfs, axis=1)
+        roll_dfs_all.columns = roll_dfs_all.columns.droplevel(0)
+    # df_all = pd.concat([df, roll_dfs_all], axis=1)
+    # df_all = df_all.loc[pd.notnull(df_all['game'])]
+    df['impossible'] = df['imp_0'] | df['imp_1'] | df['imp_2'] | df['imp_3']| df['imp_4']| df['imp_5']
+    possible_games = df.loc[df['impossible'] == False, 'game'] 
+    p = possible_games.sum()
+    print(p)
+    for color in ['green', 'blue', 'red']:
+        df[f'{color}_max'] = get_color_max(roll_dfs_all, color)
+
+    df['cube'] = df['green_max'] * df['blue_max'] * df['red_max']
+    print(df['cube'].sum())
