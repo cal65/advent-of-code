@@ -26,4 +26,19 @@ def calc_card_scores(n1_array, n2_array):
     return scores
 
 
+def calc_copies(scores):
+    card_matches = [int(np.log2(s))+1 if s >0 else 0 for s in scores]
+    multiplier_dict = {}
+    for i in range(len(card_matches)):
+        multiplier_dict[i] = 1
+    card_copies = []
+    for i, cm in enumerate(card_matches):
+        copies = multiplier_dict[i]
+        card_copies.append(copies)
+        if cm > 0:
+            for j in range(int(cm)):
+                multiplier_dict[i+j+1] += 1*copies
+    return multiplier_dict
+
+
     
