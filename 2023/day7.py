@@ -154,7 +154,7 @@ def calc_winnings_df(hands, scores, bids):
     df = pd.DataFrame({"hand": hands, "score": scores, "bid": bids})
     df['rank'] = df['score'].rank(ascending=True)
     df['winnings'] = df['bid'].astype(int) * df['rank']
-    df.sort_values('rank', inplace=True)
+    #df.sort_values('rank', inplace=True)
     return df
 
 
@@ -197,6 +197,6 @@ if __name__ == "__main__":
     test_part2 = winnings_pipeline(test_hands, test_bids, part2=True, mapper2=mapper_part2)['winnings'].sum()==5905
     print(test_part2)
     
-    scores_part2 = winnings_df['hand'].apply(lambda x: hand_to_int(x, mapper=mapper_part2, part2=True, mapper2=mapper_part2))
+    scores_part2 = [hand_to_int(h, mapper=mapper_part2, part2=True, mapper2=mapper_part2) for h in hands]
     print(calc_winnings_df(hands, scores_part2, bids)['winnings'].sum())
     # 251824095.0
