@@ -37,7 +37,7 @@ if __name__ == "__main__":
     d9 = read_file("day9.txt")
     parsed_arr = parse_file(d9)
     test_arr = [10,  13,  16,  21,  30,  45]
-    print(iterate_diffs(test_arr))
+    print(iterate_diffs(test_arr)+45 == 68)
 
     next_nums = [p[-1] + iterate_diffs(p) for p in parsed_arr]
     answer = np.sum(next_nums)
