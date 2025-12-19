@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def read_input(filepath, strip: bool = True) -> str:
-    """Read input file for a specific day."""
+    """Read input_data file for a specific day."""
     filepath = Path(filepath)
     if not filepath.exists():
         raise FileNotFoundError(f"Input file not found: {filepath}")
@@ -16,32 +16,32 @@ def read_input(filepath, strip: bool = True) -> str:
     return content.strip() if strip else content
 
 
-def read_lines(day: int, year: int = 2024, strip: bool = True) -> List[str]:
-    """Read input as list of lines."""
-    content = read_input(day, year, strip)
+def read_lines(filepath, strip: bool = True) -> List[str]:
+    """Read input_data as list of lines."""
+    content = read_input(filepath, strip)
     return content.split('\n')
 
 
 def read_ints(day: int, year: int = 2024) -> List[int]:
-    """Read input as list of integers."""
+    """Read input_data as list of integers."""
     lines = read_lines(day, year)
     return [int(line) for line in lines if line]
 
 
 def read_blocks(day: int, year: int = 2024, sep: str = '\n\n') -> List[str]:
-    """Read input as blocks separated by blank lines."""
+    """Read input_data as blocks separated by blank lines."""
     content = read_input(day, year, strip=False)
     return [block.strip() for block in content.split(sep)]
 
 
 def read_csv(day: int, year: int = 2024, delimiter: str = ',') -> List[List[str]]:
-    """Read CSV-like input."""
+    """Read CSV-like input_data."""
     lines = read_lines(day, year)
     return [line.split(delimiter) for line in lines]
 
 
 def read_grid(day: int, year: int = 2024) -> List[List[str]]:
-    """Read input as 2D grid."""
+    """Read input_data as 2D grid."""
     lines = read_lines(day, year)
     return [list(line) for line in lines]
 
